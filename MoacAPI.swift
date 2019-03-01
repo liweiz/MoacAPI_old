@@ -10,9 +10,10 @@ import Foundation
 import Moya
 import PromiseKit
 import BigInt
+import SwiftyJSON
 
 public struct Constants {
-    public static let testAPIBaseURL = URL(string: "https://jsonplaceholder.typicode.com")!
+    public static let testAPIBaseURL = URL(string: "http://139.198.126.104:8080")!
 //    public static let testAPIBaseURL = URL(string: "https://jsonplaceholder.typicode.com")!
 }
 
@@ -22,15 +23,12 @@ class MoacAPIOperation: NSObject {
     lazy var provider = MoacAPIProviderFactory.makeProvider()
     
     
-    func postTest() -> Promise<Any> {
-        
+    func auth(account: String, pwd: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.postAny(reqJSON: ReqBodyJSON(title: "hahah", body: "ha**21", userId: 342))) { result in
+            provider.request(.auth(account: account, pwd: pwd)) { result in
                 switch result {
                 case .success(let response):
-                    print("OK:")
-                    print(response)
-                    seal.fulfill(response)
+                    seal.fulfill(response.data)
                 case .failure(let error):
                     seal.reject(error)
                 }
@@ -38,15 +36,12 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func getTest() -> Promise<Bool> {
-        
+    func register(pwd: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.getAny) { result in
+            provider.request(.register(pwd: pwd, token: token)) { result in
                 switch result {
                 case .success(let response):
-                    print("OK:")
-                    print(response)
-                    seal.fulfill(true)
+                    seal.fulfill(response.data)
                 case .failure(let error):
                     seal.reject(error)
                 }
@@ -54,6 +49,239 @@ class MoacAPIOperation: NSObject {
         }
     }
     
+    func login(address: String, pwd: String, keyStore: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.login(address: address, pwd: pwd, keyStore: keyStore, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBalance(vnodeip: String, vnodeport: String, address: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBalance(vnodeip: vnodeip, vnodeport: vnodeport, address: address, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBlockNumber(vnodeip: String, vnodeport: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBlockNumber(vnodeip: vnodeip, vnodeport: vnodeport, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBlockInfo(vnodeip: String, vnodeport: String, block: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBlockInfo(vnodeip: vnodeip, vnodeport: vnodeport, block: block, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func sendRawTransaction(vnodeip: String, vnodeport: String, from: String, to: String, amount: String, data: String, privatekey: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.sendRawTransaction(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, amount: amount, data: data, privatekey: privatekey, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func callContract(vnodeip: String, vnodeport: String, address: String, data: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.callContract(vnodeip: vnodeip, vnodeport: vnodeport, address: address, data: data, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func transferErc(vnodeip: String, vnodeport: String, from: String, to: String, contractaddress: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.transferErc(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, contractaddress: contractaddress, amount: amount, privatekey: privatekey, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getErcBalance(vnodeip: String, vnodeport: String, address: String, contractaddress: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getErcBalance(vnodeip: vnodeip, vnodeport: vnodeport, address: address, contractaddress: contractaddress, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, contractaddress: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.ercApprove(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, contractaddress: contractaddress, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func buyErcMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.buyErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBlockNumberMicro(microip: String, microport: String, microchainaddress: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBlockNumberMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBlockMicro(microip: String, microport: String, microchainaddress: String, blocknum: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBlockMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, blocknum: blocknum, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getBalanceMicro(microip: String, microport: String, microchainaddress: String, address: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getBalanceMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, address: address, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func transferCoinMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, via: String, from: String, to: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.transferCoinMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, via: via, from: from, to: to, amount: amount, privatekey: privatekey, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func sendRawTransactionMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, from: String, microchainaddress: String, via: String, amount: String, dappaddress: String, data: String, privatekey: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.sendRawTransactionMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, from: from, microchainaddress: microchainaddress, via: via, amount: amount, dappaddress: dappaddress, data: data, privatekey: privatekey, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.callContractMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, data: data, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func redeemMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, address: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.redeemMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, address: address, amount: amount, privatekey: privatekey, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
 }
 
 struct ResBodyJSON: Encodable {
