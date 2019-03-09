@@ -114,9 +114,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func callContract(vnodeip: String, vnodeport: String, address: String, data: String, token: String) -> Promise<Data> {
+    func callContract(vnodeip: String, vnodeport: String, contractaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.callContract(vnodeip: vnodeip, vnodeport: vnodeport, address: address, data: data, token: token)) { result in
+            provider.request(.callContract(vnodeip: vnodeip, vnodeport: vnodeport, contractaddress: contractaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -298,7 +298,7 @@ enum MoacAPI {
     case getBlockNumber(vnodeip: String, vnodeport: String, token: String)
     case getBlockInfo(vnodeip: String, vnodeport: String, block: String, token: String)
     case sendRawTransaction(vnodeip: String, vnodeport: String, from: String, to: String, amount: String, data: String, privatekey: String, token: String)
-    case callContract(vnodeip: String, vnodeport: String, address: String, data: String, token: String)
+    case callContract(vnodeip: String, vnodeport: String, contractaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String)
     case transferErc(vnodeip: String, vnodeport: String, from: String, to: String, contractaddress: String, amount: String, privatekey: String, token: String)
     case getErcBalance(vnodeip: String, vnodeport: String, address: String, contractaddress: String, token: String)
     case ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, contractaddress: String, token: String)
@@ -322,43 +322,43 @@ extension MoacAPI: TargetType {
         case .auth:
             return "/auth"
         case .register:
-            return "/api/account/register"
+            return "/api/account/v1.0/register"
         case .login:
-            return "/api/account/login"
+            return "/api/account/v1.0/login"
         case .getBalance:
-            return "/api/vnode/getBalance"
+            return "/api/vnode/v1.0/getBalance"
         case .getBlockNumber:
-            return "/api/vnode/getBlockNumber"
+            return "/api/vnode/v1.0/getBlockNumber"
         case .getBlockInfo:
-            return "/api/vnode/getBlockInfo"
+            return "/api/vnode/v1.0/getBlockInfo"
         case .sendRawTransaction:
-            return "/api/vnode/sendRawTransaction"
+            return "/api/vnode/v1.0/sendRawTransaction"
         case .callContract:
-            return "/api/vnode/callContract"
+            return "/api/vnode/v1.0/callContract"
         case .transferErc:
-            return "/api/vnode/transferErc"
+            return "/api/vnode/v1.0/transferErc"
         case .getErcBalance:
-            return "/api/vnode/getErcBalance"
+            return "/api/vnode/v1.0/getErcBalance"
         case .ercApprove:
-            return "/api/vnode/ercApprove"
+            return "/api/vnode/v1.0/ercApprove"
         case .buyErcMintToken:
-            return "/api/vnode/buyErcMintToken"
+            return "/api/vnode/v1.0/buyErcMintToken"
         case .buyMoacMintToken:
-            return "/api/vnode/buyMoacMintToken"
+            return "/api/vnode/v1.0/buyMoacMintToken"
         case .getBlockNumberMicro:
-            return "/api/micro/getBlockNumber"
+            return "/api/micro/v1.0/getBlockNumber"
         case .getBlockMicro:
-            return "/api/micro/getBlock"
+            return "/api/micro/v1.0/getBlock"
         case .getBalanceMicro:
-            return "/api/micro/getBalance"
+            return "/api/micro/v1.0/getBalance"
         case .transferCoinMicro:
-            return "/api/micro/transferCoin"
+            return "/api/micro/v1.0/transferCoin"
         case .sendRawTransactionMicro:
-            return "/api/micro/sendRawTransaction"
+            return "/api/micro/v1.0/sendRawTransaction"
         case .callContractMicro:
-            return "/api/micro/callContract"
+            return "/api/micro/v1.0/callContract"
         case .redeemMintToken:
-            return "/api/micro/redeemMintToken"
+            return "/api/micro/v1.0/redeemMintToken"
         }
     }
     
@@ -394,7 +394,7 @@ extension MoacAPI: TargetType {
         case .register(let pwd, let token):
             return .requestParameters(parameters: ["pwd": pwd, "token": token], encoding: URLEncoding.default)
         case .login(let address, let pwd, let keyStore, let token):
-            return .requestParameters(parameters: ["address": address, "pwd": pwd, "keyStore": keyStore, "token": token],encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["address": address, "pwd": pwd, "keystore": keyStore, "token": token],encoding: URLEncoding.default)
         case .getBalance(let vnodeip, let vnodeport, let address, let token):
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "token": token], encoding: URLEncoding.default)
         case .getBlockNumber(let vnodeip, let vnodeport, let token):
@@ -403,8 +403,8 @@ extension MoacAPI: TargetType {
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "block": block, "token": token], encoding: URLEncoding.default)
         case .sendRawTransaction(let vnodeip, let vnodeport, let from, let to, let amount, let data, let privatekey, let token):
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "from": from, "to": to, "amount": amount, "data": data, "privatekey": privatekey, "token": token], encoding: URLEncoding.default)
-        case .callContract(let vnodeip, let vnodeport, let address, let data, let token):
-            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "data": data, "token": token], encoding: URLEncoding.default)
+        case .callContract(let vnodeip, let vnodeport, let contractaddress, let method, let paramtypes, let paramvalues, let token):
+            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "contractaddress": contractaddress, "method": method, "paramtypes": paramtypes, "paramvalues": paramvalues, "token": token], encoding: URLEncoding.default)
         case .transferErc(let vnodeip, let vnodeport, let from, let to, let contractaddress, let amount, let privatekey, let token):
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "from": from, "to": to, "contractaddress": contractaddress, "amount": amount, "privatekey": privatekey, "token": token], encoding: URLEncoding.default)
         case .getErcBalance(let vnodeip, let vnodeport, let address, let contractaddress, let token):
