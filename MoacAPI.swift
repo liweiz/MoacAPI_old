@@ -12,6 +12,14 @@ import PromiseKit
 import BigInt
 import SwiftyJSON
 
+class CompleteUrlLoggerPlugin : PluginType {
+    
+    
+    func willSend(_ request: RequestType, target: TargetType) {
+        print(JSON(request.request?.httpBody) ?? "Something is wrong")
+    }
+}
+
 public struct Constants {
     public static let testAPIBaseURL = URL(string: "http://139.198.126.104:8080")!
 //    public static let testAPIBaseURL = URL(string: "https://jsonplaceholder.typicode.com")!
@@ -20,7 +28,18 @@ public struct Constants {
 
 class MoacAPIOperation: NSObject {
     
-    lazy var provider = MoacAPIProviderFactory.makeProvider()
+//    lazy var provider = MoacAPIProviderFactory.makeProvider()
+    
+    private func JSONResponseDataFormatter(_ data: Data) -> Data {
+        do {
+            let dataAsJSON = try JSONSerialization.jsonObject(with: data)
+            let prettyData =  try JSONSerialization.data(withJSONObject: dataAsJSON, options: .prettyPrinted)
+            return prettyData
+        } catch {
+            return data // fallback to original data if it can't be serialized.
+        }
+    }
+    lazy var provider = MoyaProvider<MoacAPI>(plugins: [NetworkLoggerPlugin(verbose: true, responseDataFormatter: JSONResponseDataFormatter)])
     
     
     func auth(account: String, pwd: String) -> Promise<Data> {
@@ -166,9 +185,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func buyErcMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String) -> Promise<Data> {
+    func buyErcMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.buyErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, token: token)) { result in
+            provider.request(.buyErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -179,9 +198,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String) -> Promise<Data> {
+    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, token: token)) { result in
+            provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -302,8 +321,8 @@ enum MoacAPI {
     case transferErc(vnodeip: String, vnodeport: String, from: String, to: String, contractaddress: String, amount: String, privatekey: String, token: String)
     case getErcBalance(vnodeip: String, vnodeport: String, address: String, contractaddress: String, token: String)
     case ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, contractaddress: String, token: String)
-    case buyErcMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String)
-    case buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, token: String)
+    case buyErcMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String)
+    case buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String)
     case getBlockNumberMicro(microip: String, microport: String, microchainaddress: String, token: String)
     case getBlockMicro(microip: String, microport: String, microchainaddress: String, blocknum: String, token: String)
     case getBalanceMicro(microip: String, microport: String, microchainaddress: String, address: String, token: String)
@@ -411,10 +430,10 @@ extension MoacAPI: TargetType {
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "contractaddress": contractaddress, "token": token], encoding: URLEncoding.default)
         case .ercApprove(let vnodeip, let vnodeport, let address, let amount, let privatekey, let microchainaddress, let contractaddress, let token):
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "amount": amount, "privatekey": privatekey, "microchainaddress": microchainaddress, "contractaddress": contractaddress, "token": token], encoding: URLEncoding.default)
-        case .buyErcMintToken(let vnodeip, let vnodeport, let address, let amount, let privatekey, let microchainaddress, let token):
-            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "amount": amount, "privatekey": privatekey, "microchainaddress": microchainaddress, "token": token], encoding: URLEncoding.default)
-        case .buyMoacMintToken(let vnodeip, let vnodeport, let address, let amount, let privatekey, let microchainaddress, let token):
-            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "amount": amount, "privatekey": privatekey, "microchainaddress": microchainaddress, "token": token], encoding: URLEncoding.default)
+        case .buyErcMintToken(let vnodeip, let vnodeport, let address, let privatekey, let microchainaddress, let method, let paramtypes, let paramvalues, let token):
+            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "privatekey": privatekey, "microchainaddress": microchainaddress, "method": method, "paramtypes": paramtypes, "paramvalues": paramvalues, "token": token], encoding: URLEncoding.default)
+        case .buyMoacMintToken(let vnodeip, let vnodeport, let address, let privatekey, let microchainaddress, let method, let paramtypes, let paramvalues, let token):
+            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "privatekey": privatekey, "microchainaddress": microchainaddress, "method": method, "paramtypes": paramtypes, "paramvalues": paramvalues, "token": token], encoding: URLEncoding.default)
         case .getBlockNumberMicro(let microip, let microport, let microchainaddress, let token):
             return .requestParameters(parameters: ["microip": microip, "microport": microport, "microchainaddress": microchainaddress, "token": token], encoding: URLEncoding.default)
         case .getBlockMicro(let microip, let microport, let microchainaddress, let blocknum, let token):
