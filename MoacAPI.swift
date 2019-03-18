@@ -68,9 +68,22 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func login(address: String, pwd: String, keyStore: String, token: String) -> Promise<Data> {
+    func login(address: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.login(address: address, pwd: pwd, keyStore: keyStore, token: token)) { result in
+            provider.request(.login(address: address, pwd: pwd, encode: encode, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func importAccount(address: String, pwd: String, keystore: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.importAccount(address: address, pwd: pwd, keystore: keystore, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -120,9 +133,35 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func sendRawTransaction(vnodeip: String, vnodeport: String, from: String, to: String, amount: String, data: String, privatekey: String, token: String) -> Promise<Data> {
+    func getTransactionByHash(vnodeip: String, vnodeport: String, hash: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.sendRawTransaction(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, amount: amount, data: data, privatekey: privatekey, token: token)) { result in
+            provider.request(.getTransactionByHash(vnodeip: vnodeip, vnodeport: vnodeport, hash: hash, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func getTransactionReceiptByHash(vnodeip: String, vnodeport: String, hash: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.getTransactionReceiptByHash(vnodeip: vnodeip, vnodeport: vnodeport, hash: hash, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func sendRawTransaction(vnodeip: String, vnodeport: String, from: String, to: String, amount: String, method: String, paramtypes: [String], paramvalues: [String], privatekey: String, pwd: String, encode: String, gasprice: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.sendRawTransaction(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, amount: amount, method: method, paramtypes: paramtypes, paramvalues: paramvalues, privatekey: privatekey, pwd: pwd, encode: encode, gasprice: gasprice, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -146,9 +185,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func transferErc(vnodeip: String, vnodeport: String, from: String, to: String, contractaddress: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+    func transferErc(vnodeip: String, vnodeport: String, from: String, to: String, contractaddress: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.transferErc(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, contractaddress: contractaddress, amount: amount, privatekey: privatekey, token: token)) { result in
+            provider.request(.transferErc(vnodeip: vnodeip, vnodeport: vnodeport, from: from, to: to, contractaddress: contractaddress, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -172,9 +211,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, microchainaddress: String, contractaddress: String, token: String) -> Promise<Data> {
+    func ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, contractaddress: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.ercApprove(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, microchainaddress: microchainaddress, contractaddress: contractaddress, token: token)) { result in
+            provider.request(.ercApprove(vnodeip: vnodeip, vnodeport: vnodeport, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, microchainaddress: microchainaddress, contractaddress: contractaddress, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -185,9 +224,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func buyErcMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
+    func buyErcMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.buyErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
+            provider.request(.buyErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, pwd: pwd, encode: encode, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -198,9 +237,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
+    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
+            provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, pwd: pwd, encode: encode, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -276,9 +315,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func transferCoinMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, via: String, from: String, to: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+    func transferCoinMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, via: String, from: String, to: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.transferCoinMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, via: via, from: from, to: to, amount: amount, privatekey: privatekey, token: token)) { result in
+            provider.request(.transferCoinMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, via: via, from: from, to: to, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -289,9 +328,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func sendRawTransactionMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, from: String, microchainaddress: String, via: String, amount: String, dappaddress: String, data: String, privatekey: String, token: String) -> Promise<Data> {
+    func sendRawTransactionMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, from: String, microchainaddress: String, via: String, amount: String, dappaddress: String, method: String, paramtypes: [String], paramvalues: [String], privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.sendRawTransactionMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, from: from, microchainaddress: microchainaddress, via: via, amount: amount, dappaddress: dappaddress, data: data, privatekey: privatekey, token: token)) { result in
+            provider.request(.sendRawTransactionMicro(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, from: from, microchainaddress: microchainaddress, via: via, amount: amount, dappaddress: dappaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -315,9 +354,22 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func redeemMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, address: String, amount: String, privatekey: String, token: String) -> Promise<Data> {
+    func redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.redeemMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, address: address, amount: amount, privatekey: privatekey, token: token)) { result in
+            provider.request(.redeemErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response.data)
+                case .failure(let error):
+                    seal.reject(error)
+                }
+            }
+        }
+    }
+    
+    func redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
+        return Promise { seal in
+            provider.request(.redeemMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -338,8 +390,8 @@ struct ResBodyJSON: Encodable {
 enum MoacAPI {
     case auth(account: String, pwd: String)
     case register(pwd: String, token: String)
-    case login(address: String, pwd: String, keyStore: String, token: String)
-    case importAccount(address: String, pwd: String, encode: String, token: String)
+    case login(address: String, pwd: String, encode: String, token: String)
+    case importAccount(address: String, pwd: String, keystore: String, token: String)
     case getBalance(vnodeip: String, vnodeport: String, address: String, token: String)
     case getBlockNumber(vnodeip: String, vnodeport: String, token: String)
     case getBlockInfo(vnodeip: String, vnodeport: String, block: String, token: String)
@@ -464,8 +516,8 @@ extension MoacAPI: TargetType {
             return .requestParameters(parameters: ["pwd": pwd, "token": token], encoding: URLEncoding.default)
         case .login(let address, let pwd, let encode, let token):
             return .requestParameters(parameters: ["address": address, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
-        case .importAccount(let address, let pwd, let keyStore, let token):
-            return .requestParameters(parameters: ["address": address, "pwd": pwd, "keystore": keyStore, "token": token], encoding: URLEncoding.default)
+        case .importAccount(let address, let pwd, let keystore, let token):
+            return .requestParameters(parameters: ["address": address, "pwd": pwd, "keystore": keystore, "token": token], encoding: URLEncoding.default)
         case .getBalance(let vnodeip, let vnodeport, let address, let token):
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "address": address, "token": token], encoding: URLEncoding.default)
         case .getBlockNumber(let vnodeip, let vnodeport, let token):
