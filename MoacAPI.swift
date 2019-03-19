@@ -341,7 +341,7 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: String, token: String) -> Promise<Data> {
+    func callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: [String], token: String) -> Promise<Data> {
         return Promise { seal in
             provider.request(.callContractMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, data: data, token: token)) { result in
                 switch result {
@@ -411,7 +411,7 @@ enum MoacAPI {
     case getTransactionReceiptByHashMicro(microip: String, microport: String, microchainaddress: String, hash: String, token: String)
     case transferCoinMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, via: String, from: String, to: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
     case sendRawTransactionMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, from: String, microchainaddress: String, via: String, amount: String, dappaddress: String, method: String, paramtypes: [String], paramvalues: [String], privatekey: String, pwd: String, encode: String, token: String)
-    case callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: String, token: String)
+    case callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: [String], token: String)
     case redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
     case redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
 }
