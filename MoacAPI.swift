@@ -15,9 +15,9 @@ import SwiftyJSON
 class CompleteUrlLoggerPlugin : PluginType {
     
     
-    func willSend(_ request: RequestType, target: TargetType) {
-        print(JSON(request.request?.httpBody) ?? "Something is wrong")
-    }
+//    func willSend(_ request: RequestType, target: TargetType) {
+//        print(JSON(request.request?.httpBody) ?? "Something is wrong")
+//    }
 }
 
 public struct Constants {
@@ -237,7 +237,7 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String) -> Promise<Data> {
+    func buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: String, paramvalues: String, token: String) -> Promise<Data> {
         return Promise { seal in
             provider.request(.buyMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, address: address, privatekey: privatekey, pwd: pwd, encode: encode, microchainaddress: microchainaddress, method: method, paramtypes: paramtypes, paramvalues: paramvalues, token: token)) { result in
                 switch result {
@@ -341,7 +341,7 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: [String], token: String) -> Promise<Data> {
+    func callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: String, token: String) -> Promise<Data> {
         return Promise { seal in
             provider.request(.callContractMicro(microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, data: data, token: token)) { result in
                 switch result {
@@ -354,9 +354,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
+    func redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappbaseaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.redeemErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
+            provider.request(.redeemErcMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappbaseaddress: dappbaseaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -367,9 +367,9 @@ class MoacAPIOperation: NSObject {
         }
     }
     
-    func redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
+    func redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappbaseaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String) -> Promise<Data> {
         return Promise { seal in
-            provider.request(.redeemMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappaddress: dappaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
+            provider.request(.redeemMoacMintToken(vnodeip: vnodeip, vnodeport: vnodeport, microip: microip, microport: microport, microchainaddress: microchainaddress, dappbaseaddress: dappbaseaddress, via: via, address: address, amount: amount, privatekey: privatekey, pwd: pwd, encode: encode, token: token)) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response.data)
@@ -403,7 +403,7 @@ enum MoacAPI {
     case getErcBalance(vnodeip: String, vnodeport: String, address: String, contractaddress: String, token: String)
     case ercApprove(vnodeip: String, vnodeport: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, contractaddress: String, token: String)
     case buyErcMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String)
-    case buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: [String], paramvalues: [String], token: String)
+    case buyMoacMintToken(vnodeip: String, vnodeport: String, address: String, privatekey: String, pwd: String, encode: String, microchainaddress: String, method: String, paramtypes: String, paramvalues: String, token: String)
     case getBlockNumberMicro(microip: String, microport: String, microchainaddress: String, token: String)
     case getBlockMicro(microip: String, microport: String, microchainaddress: String, blocknum: String, token: String)
     case getBalanceMicro(microip: String, microport: String, microchainaddress: String, address: String, token: String)
@@ -411,9 +411,9 @@ enum MoacAPI {
     case getTransactionReceiptByHashMicro(microip: String, microport: String, microchainaddress: String, hash: String, token: String)
     case transferCoinMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, via: String, from: String, to: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
     case sendRawTransactionMicro(vnodeip: String, vnodeport: String, microip: String, microport: String, from: String, microchainaddress: String, via: String, amount: String, dappaddress: String, method: String, paramtypes: [String], paramvalues: [String], privatekey: String, pwd: String, encode: String, token: String)
-    case callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: [String], token: String)
-    case redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
-    case redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
+    case callContractMicro(microip: String, microport: String, microchainaddress: String, dappaddress: String, data: String, token: String)
+    case redeemErcMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappbaseaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
+    case redeemMoacMintToken(vnodeip: String, vnodeport: String, microip: String, microport: String, microchainaddress: String, dappbaseaddress: String, via: String, address: String, amount: String, privatekey: String, pwd: String, encode: String, token: String)
 }
 
 extension MoacAPI: TargetType {
@@ -558,10 +558,10 @@ extension MoacAPI: TargetType {
             return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "microip": microip, "microport": microport, "from": from, "microchainaddress": microchainaddress, "via": via, "amount": amount, "dappaddress": dappaddress, "method": method, "paramtypes": paramtypes, "paramvalues": paramvalues, "privatekey": privatekey, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
         case .callContractMicro(let microip, let microport, let microchainaddress, let dappaddress, let data, let token):
             return .requestParameters(parameters: ["microip": microip, "microport": microport, "microchainaddress": microchainaddress, "dappaddress": dappaddress, "data": data, "token": token], encoding: URLEncoding.default)
-        case .redeemErcMintToken(let vnodeip, let vnodeport, let microip, let microport, let microchainaddress, let dappaddress, let via, let address, let amount, let privatekey, let pwd, let encode, let token):
-            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "microip": microip, "microport": microport, "microchainaddress": microchainaddress, "dappaddress": dappaddress, "via": via, "address": address, "amount": amount, "privatekey": privatekey, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
-        case .redeemMoacMintToken(let vnodeip, let vnodeport, let microip, let microport, let microchainaddress, let dappaddress, let via, let address, let amount, let privatekey, let pwd, let encode, let token):
-            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "microip": microip, "microport": microport, "microchainaddress": microchainaddress, "dappaddress": dappaddress, "via": via, "address": address, "amount": amount, "privatekey": privatekey, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
+        case .redeemErcMintToken(let vnodeip, let vnodeport, let microip, let microport, let microchainaddress, let dappbaseaddress, let via, let address, let amount, let privatekey, let pwd, let encode, let token):
+            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "microip": microip, "microport": microport, "microchainaddress": microchainaddress, "dappbaseaddress": dappbaseaddress, "via": via, "address": address, "amount": amount, "privatekey": privatekey, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
+        case .redeemMoacMintToken(let vnodeip, let vnodeport, let microip, let microport, let microchainaddress, let dappbaseaddress, let via, let address, let amount, let privatekey, let pwd, let encode, let token):
+            return .requestParameters(parameters: ["vnodeip": vnodeip, "vnodeport": vnodeport, "microip": microip, "microport": microport, "microchainaddress": microchainaddress, "dappbaseaddress": dappbaseaddress, "via": via, "address": address, "amount": amount, "privatekey": privatekey, "pwd": pwd, "encode": encode, "token": token], encoding: URLEncoding.default)
         }
     }
     
